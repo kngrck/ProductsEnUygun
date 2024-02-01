@@ -1,5 +1,6 @@
 plugins {
     kotlin("kapt")
+    kotlin("plugin.serialization") version libs.versions.kotlinPlugin
     alias(libs.plugins.android.app)
     alias(libs.plugins.kotlin)
     alias(libs.plugins.dagger.hilt)
@@ -57,6 +58,9 @@ dependencies {
     implementation(libs.bundles.compose)
     implementation(libs.hilt.android)
     implementation(libs.hilt.compiler)
+    implementation(libs.kotlinx.serialization)
+    implementation(libs.okhttp)
+    implementation(libs.bundles.retrofit)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.junit.ext)

@@ -1,5 +1,8 @@
 package com.example.productsenuygun.data.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Product(
     val id: Int,
     val brand: String,
