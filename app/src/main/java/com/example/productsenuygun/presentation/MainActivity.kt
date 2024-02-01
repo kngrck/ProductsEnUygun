@@ -3,11 +3,11 @@ package com.example.productsenuygun.presentation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
+import androidx.compose.material3.Scaffold
 import androidx.navigation.compose.rememberNavController
-import com.example.productsenuygun.presentation.navigation.NavigationItem
-import com.example.productsenuygun.presentation.productlist.ProductListingView
+import com.example.productsenuygun.presentation.common.AppBar
+import com.example.productsenuygun.presentation.navigation.BottomNavBar
+import com.example.productsenuygun.presentation.navigation.NavigationHost
 import com.example.productsenuygun.presentation.ui.theme.ProductsEnUygunTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,11 +18,16 @@ class MainActivity : ComponentActivity() {
         setContent {
             ProductsEnUygunTheme {
                 val navController = rememberNavController()
-                NavHost(
-                    navController = navController,
-                    startDestination = NavigationItem.ProductList.route
-                ) {
-                    composable(NavigationItem.ProductList.route) { ProductListingView(navController) }
+
+                Scaffold(
+                    topBar = {
+                        AppBar(navController)
+                    },
+                    bottomBar = {
+                        BottomNavBar(navController)
+                    }
+                ) { padding ->
+                    NavigationHost(navController, padding)
                 }
             }
         }
