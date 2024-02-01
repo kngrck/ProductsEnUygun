@@ -57,7 +57,7 @@ dependencies {
     implementation(libs.bundles.android)
     implementation(libs.bundles.compose)
     implementation(libs.hilt.android)
-    implementation(libs.hilt.compiler)
+    kapt(libs.hilt.compiler)
     implementation(libs.kotlinx.serialization)
     implementation(libs.okhttp)
     implementation(libs.bundles.retrofit)
