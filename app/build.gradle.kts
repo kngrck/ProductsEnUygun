@@ -1,6 +1,8 @@
 plugins {
+    kotlin("kapt")
     alias(libs.plugins.android.app)
     alias(libs.plugins.kotlin)
+    alias(libs.plugins.dagger.hilt)
 }
 
 android {
@@ -53,9 +55,15 @@ dependencies {
 
     implementation(libs.bundles.android)
     implementation(libs.bundles.compose)
+    implementation(libs.hilt.android)
+    implementation(libs.hilt.compiler)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.junit.ext)
     androidTestImplementation(platform(libs.compose.bom))
     debugImplementation(libs.compose.ui.tooling)
+}
+
+kapt {
+    correctErrorTypes = true
 }

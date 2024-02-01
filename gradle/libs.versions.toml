@@ -5,7 +5,8 @@ androidLifecycle = "2.6.2"
 androidActivityCompose = "1.8.2"
 compose = "1.5.4"
 composeBom = "2023.08.00"
-compose-material3 = "1.1.2"
+composeMaterial3 = "1.1.2"
+daggerHilt = "2.48"
 kotlinPlugin = "1.9.0"
 navigation = "2.7.6"
 junit = "4.13.2"
@@ -20,8 +21,10 @@ compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeB
 compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
 compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics", version.ref = "compose" }
 compose-ui-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "compose-material3" }
+compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "composeMaterial3" }
 compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "daggerHilt" }
+hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "daggerHilt" }
 
 #Test
 junit = { module = "junit:junit", version.ref = "junit" }
@@ -37,3 +40,4 @@ compose = ["android-activity-compose", "compose-bom", "compose-ui", "compose-ui-
 [plugins]
 android-app = { id = "com.android.application", version.ref = "androidAppPlugin" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinPlugin" }
+dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "daggerHilt"}

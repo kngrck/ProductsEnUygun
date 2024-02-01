@@ -9,7 +9,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.productsenuygun.presentation.navigation.NavigationItem
 import com.example.productsenuygun.presentation.productlist.ProductListingView
 import com.example.productsenuygun.presentation.ui.theme.ProductsEnUygunTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
