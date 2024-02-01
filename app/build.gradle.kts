@@ -56,8 +56,10 @@ dependencies {
 
     implementation(libs.bundles.android)
     implementation(libs.bundles.compose)
+    implementation(libs.coil)
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+    implementation(libs.hilt.navigation)
     implementation(libs.kotlinx.serialization)
     implementation(libs.okhttp)
     implementation(libs.bundles.retrofit)

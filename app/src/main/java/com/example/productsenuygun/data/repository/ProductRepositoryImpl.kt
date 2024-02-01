@@ -10,6 +10,6 @@ class ProductRepositoryImpl @Inject constructor(
     private val api: ProductApi
 ) : ProductRepository {
     override suspend fun getProducts(): List<ProductUiModel> {
-        return api.getProducts().map { it.toUiModel() }
+        return api.getProducts().products.map { it.toUiModel() }
     }
 }
