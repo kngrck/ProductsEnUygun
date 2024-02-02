@@ -1,8 +1,8 @@
 package com.example.productsenuygun.domain.repository
 
-import com.example.productsenuygun.domain.model.ProductUiModel
+import com.example.productsenuygun.domain.model.PaginatedProducts
 
 interface ProductRepository {
 
-    suspend fun getProducts(): List<ProductUiModel>
+    suspend fun getProducts(page: Int): PaginatedProducts
 }

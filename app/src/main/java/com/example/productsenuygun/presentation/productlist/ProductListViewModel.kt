@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.productsenuygun.domain.repository.ProductRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,13 +26,41 @@ class ProductListViewModel @Inject constructor(
         getProducts()
     }
 
-    private fun getProducts() {
-        viewModelScope.launch {
+    fun loadMoreProducts() {
+        val state = currentContentState() ?: return
+        if (state.pageLoading || state.isLastPage) return
+
+        setPaginationLoader(true)
+
+        viewModelScope.launch(Dispatchers.IO) {
             runCatching {
-                val products = repository.getProducts()
+                val nextPage = state.currentPage + 1
+                val paginatedProducts = repository.getProducts(nextPage)
+                val currentProducts = state.products.toMutableList()
+                currentProducts.addAll(paginatedProducts.products)
+
+                _productListState.update {
+                    state.copy(
+                        products = currentProducts,
+                        pageLoading = false,
+                        isLastPage = paginatedProducts.isLastPage,
+                        currentPage = nextPage
+                    )
+                }
+            }.onFailure {
+                Log.e("Error", it.message.orEmpty())
+            }
+        }
+    }
+
+    private fun getProducts() {
+        viewModelScope.launch(Dispatchers.IO) {
+            runCatching {
+                val paginatedProducts = repository.getProducts(page = 1)
                 _productListState.update {
                     ProductListState.Content(
-                        products = products
+                        products = paginatedProducts.products,
+                        isLastPage = paginatedProducts.isLastPage
                     )
                 }
             }.onFailure {
@@ -41,5 +70,17 @@ class ProductListViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun setPaginationLoader(isLoading: Boolean) {
+        currentContentState()?.let { content ->
+            _productListState.update {
+                content.copy(pageLoading = isLoading)
+            }
+        }
+    }
+
+    private fun currentContentState(): ProductListState.Content? {
+        return _productListState.value as? ProductListState.Content
     }
 }
