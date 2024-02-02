@@ -30,7 +30,7 @@ class ProductListViewModel @Inject constructor(
         val state = currentContentState() ?: return
         if (state.pageLoading || state.isLastPage) return
 
-        setPaginationLoader(true)
+        showPaginationLoader()
 
         viewModelScope.launch(Dispatchers.IO) {
             runCatching {
@@ -46,6 +46,48 @@ class ProductListViewModel @Inject constructor(
                         isLastPage = paginatedProducts.isLastPage,
                         currentPage = nextPage
                     )
+                }
+            }.onFailure {
+                Log.e("Error", it.message.orEmpty())
+            }
+        }
+    }
+
+    fun onQueryChange(query: String) {
+        val state = currentContentState() ?: return
+        val updateSearchState =
+            if (query.isEmpty()) SearchState.Empty else state.searchState
+
+        _productListState.update {
+            state.copy(
+                query = query,
+                searchState = updateSearchState,
+                isLastPage = query.isNotEmpty(),
+                queryError = if (query.isEmpty()) "" else state.queryError
+            )
+        }
+    }
+
+    fun onSearch() {
+        val state = currentContentState() ?: return
+        val query = state.query
+        if (query.length < 2) {
+            _productListState.update {
+                state.copy(queryError = "At least 3 characters.")
+            }
+            return
+        }
+
+        showSearchLoader()
+        viewModelScope.launch(Dispatchers.IO) {
+            runCatching {
+                val searchedProducts = repository.searchProducts(query)
+                val searchState =
+                    if (searchedProducts.isEmpty()) SearchState.NoResult else SearchState.Loaded(
+                        searchedProducts
+                    )
+                _productListState.update {
+                    state.copy(searchState = searchState, queryError = "")
                 }
             }.onFailure {
                 Log.e("Error", it.message.orEmpty())
@@ -72,10 +114,18 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
-    private fun setPaginationLoader(isLoading: Boolean) {
+    private fun showPaginationLoader() {
         currentContentState()?.let { content ->
             _productListState.update {
-                content.copy(pageLoading = isLoading)
+                content.copy(pageLoading = true)
+            }
+        }
+    }
+
+    private fun showSearchLoader() {
+        currentContentState()?.let { content ->
+            _productListState.update {
+                content.copy(searchState = SearchState.Loading)
             }
         }
     }

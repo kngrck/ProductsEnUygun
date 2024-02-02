@@ -3,6 +3,7 @@ package com.example.productsenuygun.data.repository
 import com.example.productsenuygun.data.api.ProductApi
 import com.example.productsenuygun.domain.mapper.toUiModel
 import com.example.productsenuygun.domain.model.PaginatedProducts
+import com.example.productsenuygun.domain.model.ProductUiModel
 import com.example.productsenuygun.domain.repository.ProductRepository
 import javax.inject.Inject
 
@@ -17,6 +18,10 @@ class ProductRepositoryImpl @Inject constructor(
         val isLastPage = page.toFloat() > response.total.toFloat().div(LIMIT.toFloat())
 
         return PaginatedProducts(isLastPage = isLastPage, products = products)
+    }
+
+    override suspend fun searchProducts(query: String): List<ProductUiModel> {
+        return api.searchProducts(query).products.map { it.toUiModel() }
     }
 
     companion object {
