@@ -128,8 +128,11 @@ class ProductListViewModel @Inject constructor(
                     currentState.copy(
                         filterState = filterState.copy(
                             isApplied = true,
-                            isBottomSheetOpen = false
-                        )
+                            isBottomSheetOpen = false,
+                        ),
+                        searchState = SearchState.Empty,
+                        queryError = "",
+                        query = ""
                     )
                 }
                 val products = getProducts()
@@ -158,8 +161,11 @@ class ProductListViewModel @Inject constructor(
                             selectedCategory = defaultCategory(),
                             selectedSort = SortType.DEFAULT,
                             isApplied = false,
-                            isBottomSheetOpen = false
-                        )
+                            isBottomSheetOpen = false,
+                        ),
+                        searchState = SearchState.Empty,
+                        queryError = "",
+                        query = ""
                     )
                 }
 
