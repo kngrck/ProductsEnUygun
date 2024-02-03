@@ -20,6 +20,10 @@ class ProductRepositoryImpl @Inject constructor(
         return PaginatedProducts(isLastPage = isLastPage, products = products)
     }
 
+    override suspend fun getProductById(id: Int): ProductUiModel {
+        return api.getProductById(id).toUiModel()
+    }
+
     override suspend fun searchProducts(query: String): List<ProductUiModel> {
         return api.searchProducts(query).products.map { it.toUiModel() }
     }

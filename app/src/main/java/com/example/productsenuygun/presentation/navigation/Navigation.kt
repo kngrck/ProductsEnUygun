@@ -13,13 +13,24 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 enum class Screen {
     PRODUCT_LIST,
     FAVORITES,
-    CART
+    CART,
+    PRODUCT_DETAIL
+}
+
+enum class Arguments {
+    PRODUCT_ID
 }
 
 sealed class NavigationItem(val route: String, val title: String, val icon: ImageVector) {
     data object ProductList : NavigationItem(
         route = Screen.PRODUCT_LIST.name,
         title = "Products",
+        icon = Icons.Default.Home
+    )
+
+    data object ProductDetail : NavigationItem(
+        route = Screen.PRODUCT_DETAIL.name,
+        title = "Product Detail",
         icon = Icons.Default.Home
     )
 
@@ -39,11 +50,13 @@ sealed class NavigationItem(val route: String, val title: String, val icon: Imag
 @Composable
 fun currentNavigationItem(navController: NavController): NavigationItem? {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val route = navBackStackEntry?.destination?.route
 
-    return when (navBackStackEntry?.destination?.route) {
-        NavigationItem.ProductList.route -> NavigationItem.ProductList
-        NavigationItem.Favorites.route -> NavigationItem.Favorites
-        NavigationItem.Cart.route -> NavigationItem.Cart
+    return when {
+        route == NavigationItem.ProductList.route -> NavigationItem.ProductList
+        route == NavigationItem.Favorites.route -> NavigationItem.Favorites
+        route == NavigationItem.Cart.route -> NavigationItem.Cart
+        route != null && route.contains(NavigationItem.ProductDetail.route) -> NavigationItem.ProductDetail
         else -> null
     }
 }

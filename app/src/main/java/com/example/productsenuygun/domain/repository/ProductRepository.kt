@@ -7,5 +7,7 @@ interface ProductRepository {
 
     suspend fun getProducts(page: Int): PaginatedProducts
 
+    suspend fun getProductById(id: Int): ProductUiModel
+
     suspend fun searchProducts(query: String): List<ProductUiModel>
 }

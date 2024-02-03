@@ -34,6 +34,7 @@ import com.example.productsenuygun.presentation.common.ErrorView
 import com.example.productsenuygun.presentation.common.LoadingIndicator
 import com.example.productsenuygun.presentation.common.ProductListItem
 import com.example.productsenuygun.presentation.common.SearchTextField
+import com.example.productsenuygun.presentation.navigation.NavigationItem
 
 @Composable
 fun ProductListingView(
@@ -48,7 +49,8 @@ fun ProductListingView(
             state,
             onLoadMore = viewModel::loadMoreProducts,
             onQueryChange = viewModel::onQueryChange,
-            onSearch = viewModel::onSearch
+            onSearch = viewModel::onSearch,
+            onProductClick = { navController.navigate("${NavigationItem.ProductDetail.route}/${it}") }
         )
     }
 }
@@ -59,6 +61,7 @@ fun ProductListContent(
     onLoadMore: () -> Unit,
     onQueryChange: (query: String) -> Unit,
     onSearch: () -> Unit,
+    onProductClick: (productId: Int) -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
     val shouldLoadMore = remember {
@@ -79,7 +82,7 @@ fun ProductListContent(
     Column(modifier = Modifier.fillMaxSize()) {
         SearchSection(content, onQueryChange, onSearch)
         Spacer(modifier = Modifier.height(16.dp))
-        ProductList(lazyListState, content)
+        ProductList(lazyListState, content, onProductClick = onProductClick)
     }
 }
 
@@ -115,7 +118,8 @@ private fun SearchSection(
 @Composable
 private fun ProductList(
     lazyListState: LazyListState,
-    content: ProductListState.Content
+    content: ProductListState.Content,
+    onProductClick: (productId: Int) -> Unit,
 ) {
     LazyColumn(
         state = lazyListState,
@@ -125,7 +129,7 @@ private fun ProductList(
     ) {
         when (content.searchState) {
             is SearchState.Loaded -> items(content.searchState.searchedProducts) { product ->
-                ProductListItem(product = product, onFavoriteClick = {})
+                ProductListItem(product = product, onClick = { onProductClick(product.id) })
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
@@ -137,7 +141,7 @@ private fun ProductList(
             }
 
             is SearchState.Empty -> items(content.products) { product ->
-                ProductListItem(product = product, onFavoriteClick = {})
+                ProductListItem(product = product, onClick = { onProductClick(product.id) })
                 Spacer(modifier = Modifier.height(16.dp))
             }
 

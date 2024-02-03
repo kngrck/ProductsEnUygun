@@ -8,6 +8,7 @@ data class ProductUiModel(
     val discountPercentage: Double,
     val images: List<String>,
     val price: Int,
+    val discountPrice: Int,
     val rating: Double,
     val stock: Int,
     val thumbnail: String,

@@ -14,5 +14,10 @@ fun Product.toUiModel() = ProductUiModel(
     rating = rating,
     stock = stock,
     thumbnail = thumbnail,
-    title = title
+    title = title,
+    discountPrice = if (discountPercentage == 0.0) {
+        0
+    } else {
+        (price.toDouble() * (100.0 - discountPercentage) / 100.0).toInt()
+    }
 )

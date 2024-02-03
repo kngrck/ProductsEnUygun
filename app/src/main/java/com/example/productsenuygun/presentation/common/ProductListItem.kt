@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -27,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,8 +33,14 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.productsenuygun.domain.model.ProductUiModel
 
 @Composable
-fun ProductListItem(product: ProductUiModel, onFavoriteClick: () -> Unit) {
-    Card {
+fun ProductListItem(
+    product: ProductUiModel,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.clickable { onClick() }
+    ) {
         Box(
             modifier = Modifier
                 .height(96.dp)
@@ -59,7 +64,7 @@ fun ProductListItem(product: ProductUiModel, onFavoriteClick: () -> Unit) {
                         contentScale = ContentScale.Crop,
                     )
                     Spacer(modifier = Modifier.width(16.dp))
-                    Column() {
+                    Column {
                         Text(
                             text = product.title,
                             maxLines = 1,
@@ -97,30 +102,32 @@ fun ProductListItem(product: ProductUiModel, onFavoriteClick: () -> Unit) {
                             style = MaterialTheme.typography.labelSmall
                         )
                     }
-                    Text(
-                        text = "${product.price} TL",
-                        style = MaterialTheme.typography.labelLarge,
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
-
-                    Icon(
-                        imageVector = if (product.isFavorite) {
-                            Icons.Default.Favorite
-                        } else {
-                            Icons.Default.FavoriteBorder
-                        },
-                        contentDescription = "Favorite",
-                        modifier = Modifier
-                            .padding(bottom = 8.dp, end = 8.dp)
-                            .size(20.dp)
-                            .clickable { onFavoriteClick() }
-                    )
+                    PriceSection(product)
                 }
             }
-
-
         }
 
+    }
+}
+
+@Composable
+private fun PriceSection(product: ProductUiModel) {
+    val isDiscounted = product.discountPrice > 0
+    Column(
+        modifier = Modifier.padding(bottom = 8.dp, end = 8.dp)
+    ) {
+        if (isDiscounted) {
+            Text(
+                text = "${product.discountPrice} $",
+                style = MaterialTheme.typography.labelLarge,
+            )
+        }
+        Text(
+            text = "${product.price} $",
+            textDecoration = if (isDiscounted) TextDecoration.LineThrough else null,
+            style = if (isDiscounted) MaterialTheme.typography.labelSmall else MaterialTheme.typography.labelLarge,
+            color = if (isDiscounted) Color.Gray else Color.Black
+        )
     }
 }
 
@@ -143,8 +150,9 @@ fun ProductItemPreview() {
             stock = 50,
             thumbnail = "https://example.com/thumbnail.jpg",
             title = "Dummy Product",
-            id = 0
+            id = 0,
+            discountPrice = 90
         ),
-        onFavoriteClick = {}
+        onClick = {}
     )
 }
