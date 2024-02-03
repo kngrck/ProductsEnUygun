@@ -22,10 +22,10 @@ object AppModule {
     @Provides
     @Singleton
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
-        return Room.databaseBuilder(
-            context,
-            AppDatabase::class.java, "products-db"
-        ).build()
+        return Room
+            .databaseBuilder(context, AppDatabase::class.java, "products-db")
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     @Provides

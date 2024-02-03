@@ -1,7 +1,6 @@
 package com.example.productsenuygun.domain.repository
 
 import com.example.productsenuygun.domain.model.CartProductUiModel
-import com.example.productsenuygun.domain.model.ProductUiModel
 
 interface CartRepository {
 
@@ -9,8 +8,9 @@ interface CartRepository {
 
     suspend fun getCartProductById(id: Int): CartProductUiModel?
 
-    suspend fun increaseQuantityById(productUiModel: ProductUiModel)
+    suspend fun increaseQuantityById(cartProductUiModel: CartProductUiModel)
 
     suspend fun decreaseQuantityById(id: Int)
 
+    suspend fun removeProductById(id: Int)
 }

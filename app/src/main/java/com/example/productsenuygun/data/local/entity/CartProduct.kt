@@ -11,5 +11,6 @@ data class CartProduct(
     @ColumnInfo("name") val name: String,
     @ColumnInfo("quantity") val quantity: Int,
     @ColumnInfo("price") val price: Int,
-    @ColumnInfo("discountPrice") val discountedPrice: Int
+    @ColumnInfo("discountPrice") val discountedPrice: Int,
+    @ColumnInfo("image") val image: String
 )

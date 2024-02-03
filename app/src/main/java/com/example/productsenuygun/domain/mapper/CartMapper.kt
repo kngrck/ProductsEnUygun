@@ -9,13 +9,24 @@ fun CartProduct.toUiModel() = CartProductUiModel(
     name = name,
     quantity = quantity,
     price = price,
-    discountedPrice = discountedPrice
+    discountedPrice = discountedPrice,
+    image = image
 )
 
-fun ProductUiModel.toCartProduct() = CartProduct(
+fun CartProductUiModel.toCartProduct() = CartProduct(
+    id = id,
+    name = name,
+    quantity = quantity,
+    price = price,
+    discountedPrice = discountedPrice,
+    image = image
+)
+
+fun ProductUiModel.toCartProductUiModel() = CartProductUiModel(
     id = id,
     name = title,
     quantity = 0,
     price = price,
-    discountedPrice = discountPrice
+    discountedPrice = discountPrice,
+    image = images.firstOrNull().orEmpty()
 )

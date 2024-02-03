@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.productsenuygun.domain.mapper.toCartProductUiModel
 import com.example.productsenuygun.domain.repository.CartRepository
 import com.example.productsenuygun.domain.repository.ProductRepository
 import com.example.productsenuygun.presentation.navigation.Arguments
@@ -28,7 +29,7 @@ class ProductDetailViewModel @Inject constructor(
         MutableStateFlow(ProductDetailState.Loading)
     val viewState: StateFlow<ProductDetailState> = _viewState.asStateFlow()
 
-    init {
+    fun initProductDetail() {
         getProduct()
     }
 
@@ -47,7 +48,7 @@ class ProductDetailViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
             runCatching {
-                cartRepository.increaseQuantityById(product)
+                cartRepository.increaseQuantityById(product.toCartProductUiModel())
                 _viewState.update {
                     currentState.copy(product = product.copy(quantity = product.quantity + 1))
                 }

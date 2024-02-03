@@ -4,7 +4,6 @@ import com.example.productsenuygun.data.local.AppDatabase
 import com.example.productsenuygun.domain.mapper.toCartProduct
 import com.example.productsenuygun.domain.mapper.toUiModel
 import com.example.productsenuygun.domain.model.CartProductUiModel
-import com.example.productsenuygun.domain.model.ProductUiModel
 import com.example.productsenuygun.domain.repository.CartRepository
 
 class CartRepositoryImpl(
@@ -20,8 +19,8 @@ class CartRepositoryImpl(
         return cartDao.getCartProductById(id)?.toUiModel()
     }
 
-    override suspend fun increaseQuantityById(productUiModel: ProductUiModel) {
-        val cartProduct = productUiModel.toCartProduct()
+    override suspend fun increaseQuantityById(cartProductUiModel: CartProductUiModel) {
+        val cartProduct = cartProductUiModel.toCartProduct()
         val product = getCartProductById(cartProduct.id)
         if (product == null) cartDao.addProduct(cartProduct)
         return cartDao.increaseQuantityById(cartProduct.id)
@@ -38,4 +37,7 @@ class CartRepositoryImpl(
         return cartDao.decreaseQuantityById(id)
     }
 
+    override suspend fun removeProductById(id: Int) {
+        cartDao.deleteProductById(id)
+    }
 }

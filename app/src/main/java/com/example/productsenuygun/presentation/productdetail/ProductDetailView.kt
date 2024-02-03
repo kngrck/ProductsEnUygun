@@ -22,10 +22,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -34,6 +34,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,6 +55,10 @@ fun ProductDetailView(
     navController: NavController,
     viewModel: ProductDetailViewModel = hiltViewModel()
 ) {
+
+    LaunchedEffect(Unit) {
+        viewModel.initProductDetail()
+    }
 
     when (val state = viewModel.viewState.collectAsState().value) {
         is ProductDetailState.Loading -> LoadingIndicator()
@@ -153,11 +158,12 @@ private fun AddToCart(
                 IconButton(onClick = onRemoveFromCart) {
                     Icon(
                         imageVector = if (quantity == 1) {
-                            Icons.Default.Delete
+                            Icons.Outlined.Delete
                         } else {
                             Icons.Default.Remove
                         },
-                        contentDescription = "Remove from cart"
+                        contentDescription = "Remove from cart",
+                        tint = if (quantity == 1) Color.Red else Color.Black
                     )
 
                 }
