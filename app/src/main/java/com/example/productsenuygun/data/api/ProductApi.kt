@@ -14,6 +14,13 @@ interface ProductApi {
         @Query("limit") limit: Int,
     ): ProductsResponse
 
+    @GET("products/category/{category}")
+    suspend fun getProductsWithCategory(
+        @Path("category") category: String,
+        @Query("skip") skip: Int,
+        @Query("limit") limit: Int,
+    ): ProductsResponse
+
     @GET("products/{id}")
     suspend fun getProductById(
         @Path("id") id: Int,
@@ -23,4 +30,7 @@ interface ProductApi {
     suspend fun searchProducts(
         @Query("q") query: String,
     ): ProductsResponse
+
+    @GET("products/categories")
+    suspend fun getCategories(): List<String>
 }

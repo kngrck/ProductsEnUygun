@@ -2,6 +2,7 @@ package com.example.productsenuygun.presentation.common
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
@@ -27,11 +28,12 @@ fun SearchTextField(
     text: String,
     onValueChange: (text: String) -> Unit,
     onSearch: () -> Unit,
-    errorText: String = ""
+    modifier: Modifier = Modifier,
+    errorText: String = "",
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    Column {
+    Column(modifier = modifier) {
         TextField(
             value = text,
             onValueChange = { onValueChange(it) },
@@ -48,7 +50,8 @@ fun SearchTextField(
                 onSearch()
                 if (errorText.isEmpty()) keyboardController?.hide()
             }),
-            isError = errorText.isNotEmpty()
+            isError = errorText.isNotEmpty(),
+            modifier = Modifier.fillMaxWidth()
         )
 
         if (errorText.isNotEmpty()) {
