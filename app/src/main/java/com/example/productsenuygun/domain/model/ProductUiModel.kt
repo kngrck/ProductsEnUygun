@@ -13,6 +13,7 @@ data class ProductUiModel(
     val stock: Int,
     val thumbnail: String,
     val title: String,
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
+    val quantity: Int = 0,
 )
 

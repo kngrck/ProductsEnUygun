@@ -246,7 +246,6 @@ class ProductListViewModel @Inject constructor(
 
     private suspend fun getProducts(): PaginatedProducts {
         val currentContentState = currentContentState()
-        println(currentContentState?.filterState)
         val isSortDefault =
             currentContentState == null || currentContentState.filterState.selectedSort == SortType.DEFAULT
         val category = currentContentState?.filterState?.selectedCategory

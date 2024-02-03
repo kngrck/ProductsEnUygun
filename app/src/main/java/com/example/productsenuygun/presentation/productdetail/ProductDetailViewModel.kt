@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.productsenuygun.domain.repository.CartRepository
 import com.example.productsenuygun.domain.repository.ProductRepository
 import com.example.productsenuygun.presentation.navigation.Arguments
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val repository: ProductRepository
+    private val productRepository: ProductRepository,
+    private val cartRepository: CartRepository,
 ) : ViewModel() {
 
     private val productId: Int = savedStateHandle[Arguments.PRODUCT_ID.name]!!
@@ -39,10 +41,45 @@ class ProductDetailViewModel @Inject constructor(
         //TODO Add call
     }
 
+    fun onAddToCart() {
+        val currentState = currentContentState() ?: return
+        val product = currentState.product
+
+        viewModelScope.launch(Dispatchers.IO) {
+            runCatching {
+                cartRepository.increaseQuantityById(product)
+                _viewState.update {
+                    currentState.copy(product = product.copy(quantity = product.quantity + 1))
+                }
+            }.onFailure {
+                Log.e("Error", "Add to cart $it")
+            }
+        }
+    }
+
+    fun onRemoveFromCart() {
+        val currentState = currentContentState() ?: return
+        val product = currentState.product
+
+        viewModelScope.launch(Dispatchers.IO) {
+            runCatching {
+                cartRepository.decreaseQuantityById(product.id)
+                _viewState.update {
+                    currentState.copy(product = product.copy(quantity = product.quantity - 1))
+                }
+            }.onFailure {
+                Log.e("Error", "Add to cart $it")
+            }
+        }
+    }
+
     private fun getProduct() {
         viewModelScope.launch(Dispatchers.IO) {
             runCatching {
-                val product = repository.getProductById(productId)
+                val cartProduct = cartRepository.getCartProductById(productId)
+                val product = productRepository.getProductById(productId)
+                    .copy(quantity = cartProduct?.quantity ?: 0)
+
                 _viewState.update {
                     ProductDetailState.Content(product = product)
                 }

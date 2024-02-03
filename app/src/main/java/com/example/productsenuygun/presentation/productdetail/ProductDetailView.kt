@@ -20,9 +20,13 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -57,7 +61,9 @@ fun ProductDetailView(
         is ProductDetailState.Content -> ProductDetailContent(
             navController,
             state,
-            onFavoriteClick = viewModel::onFavoriteClick
+            onFavoriteClick = viewModel::onFavoriteClick,
+            onAddToCart = viewModel::onAddToCart,
+            onRemoveFromCart = viewModel::onRemoveFromCart,
         )
     }
 }
@@ -66,48 +72,120 @@ fun ProductDetailView(
 fun ProductDetailContent(
     navController: NavController,
     content: ProductDetailState.Content,
-    onFavoriteClick: () -> Unit
+    onFavoriteClick: () -> Unit,
+    onAddToCart: () -> Unit,
+    onRemoveFromCart: () -> Unit,
 ) {
     val product = content.product
     val isDiscounted = product.discountPrice > 0
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        ProductDetailTopBar(
-            navController = navController,
-            product = product,
-            onFavoriteClick = onFavoriteClick
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .height(300.dp)
-        ) {
-            ImageSlider(product.images)
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        ) {
-            Text(
-                text = product.title,
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.weight(1f, fill = false),
-                maxLines = 2
-            )
-            PriceSection(isDiscounted, product)
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = product.description,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
+    Column(
+        verticalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Column {
 
+            ProductDetailTopBar(
+                navController = navController,
+                product = product,
+                onFavoriteClick = onFavoriteClick
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .height(300.dp)
+            ) {
+                ImageSlider(product.images)
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                Text(
+                    text = product.title,
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.weight(1f, fill = false),
+                    maxLines = 2
+                )
+                PriceSection(isDiscounted, product)
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = product.description,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+        }
+
+        AddToCart(
+            quantity = content.product.quantity,
+            onRemoveFromCart = onRemoveFromCart,
+            onAddToCart = onAddToCart
+        )
+    }
+}
+
+@Composable
+private fun AddToCart(
+    quantity: Int,
+    onRemoveFromCart: () -> Unit,
+    onAddToCart: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 32.dp, vertical = 16.dp)
+    ) {
+        if (quantity > 0) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(40.dp)
+            ) {
+                IconButton(onClick = onRemoveFromCart) {
+                    Icon(
+                        imageVector = if (quantity == 1) {
+                            Icons.Default.Delete
+                        } else {
+                            Icons.Default.Remove
+                        },
+                        contentDescription = "Remove from cart"
+                    )
+
+                }
+                Text(
+                    text = quantity.toString(),
+                    style = MaterialTheme.typography.labelLarge,
+                )
+                IconButton(onClick = onAddToCart) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add to cart",
+                    )
+                }
+            }
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(40.dp)
+                    .clickable { onAddToCart() }
+            ) {
+                Text(
+                    text = "Add to Cart",
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+        }
     }
 }
 

@@ -17,6 +17,7 @@ navigation = "2.7.6"
 junit = "4.13.2"
 junitExt = "1.1.5"
 retrofit = "2.9.0"
+room = "2.6.1"
 
 [libraries]
 android-core = { module = "androidx.core:core-ktx", version.ref = "androidCore" }
@@ -28,6 +29,7 @@ compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
 compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics", version.ref = "compose" }
 compose-ui-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
 compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "composeMaterial3" }
+compose-material-icons = { module = "androidx.compose.material:material-icons-extended", version.ref = "composeMaterial3" }
 compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "daggerHilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "daggerHilt" }
@@ -36,6 +38,9 @@ kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "converterFactory" }
+room = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 
 #Test
 junit = { module = "junit:junit", version.ref = "junit" }
@@ -46,7 +51,7 @@ compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 
 [bundles]
 android = ["android-core", "android-lifecycle"]
-compose = ["android-activity-compose", "compose-bom", "compose-ui", "compose-ui-graphics", "compose-ui-preview", "compose-material3", "compose-navigation"]
+compose = ["android-activity-compose", "compose-bom", "compose-ui", "compose-ui-graphics", "compose-ui-preview", "compose-material3", "compose-navigation", "compose-material-icons"]
 retrofit = ["retrofit", "retrofit-converter"]
 
 [plugins]
