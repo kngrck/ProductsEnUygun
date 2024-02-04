@@ -3,7 +3,7 @@ package com.example.productsenuygun.data.repository
 import com.example.productsenuygun.data.local.AppDatabase
 import com.example.productsenuygun.domain.mapper.toCartProduct
 import com.example.productsenuygun.domain.mapper.toUiModel
-import com.example.productsenuygun.domain.model.CartProductUiModel
+import com.example.productsenuygun.domain.model.ProductUiModel
 import com.example.productsenuygun.domain.repository.CartRepository
 
 class CartRepositoryImpl(
@@ -11,16 +11,16 @@ class CartRepositoryImpl(
 ) : CartRepository {
     private val cartDao = localDatabase.cartDao()
 
-    override suspend fun getCartProducts(): List<CartProductUiModel> {
+    override suspend fun getCartProducts(): List<ProductUiModel> {
         return cartDao.getAll().map { it.toUiModel() }
     }
 
-    override suspend fun getCartProductById(id: Int): CartProductUiModel? {
+    override suspend fun getCartProductById(id: Int): ProductUiModel? {
         return cartDao.getCartProductById(id)?.toUiModel()
     }
 
-    override suspend fun increaseQuantityById(cartProductUiModel: CartProductUiModel) {
-        val cartProduct = cartProductUiModel.toCartProduct()
+    override suspend fun increaseQuantityById(productUiModel: ProductUiModel) {
+        val cartProduct = productUiModel.toCartProduct()
         val product = getCartProductById(cartProduct.id)
         if (product == null) cartDao.addProduct(cartProduct)
         return cartDao.increaseQuantityById(cartProduct.id)

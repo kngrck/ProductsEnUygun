@@ -1,13 +1,13 @@
 package com.example.productsenuygun.presentation.cart
 
-import com.example.productsenuygun.domain.model.CartProductUiModel
+import com.example.productsenuygun.domain.model.ProductUiModel
 
 sealed interface CartState {
 
     data object Loading : CartState
 
     data class Content(
-        val products: List<CartProductUiModel>,
+        val products: List<ProductUiModel>,
         val totalPrice: Int,
         val totalDiscount: Int,
         val total: Int

@@ -17,12 +17,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,7 +36,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.productsenuygun.domain.model.CartProductUiModel
+import com.example.productsenuygun.domain.model.ProductUiModel
+import com.example.productsenuygun.presentation.common.AddToCart
 import com.example.productsenuygun.presentation.common.ErrorView
 import com.example.productsenuygun.presentation.common.LoadingIndicator
 
@@ -66,9 +64,9 @@ fun CartView(navController: NavController, viewModel: CartViewModel = hiltViewMo
 @Composable
 private fun CartViewContent(
     content: CartState.Content,
-    onDecreaseQuantity: (CartProductUiModel) -> Unit,
-    onIncreaseQuantity: (CartProductUiModel) -> Unit,
-    onRemoveFromCart: (CartProductUiModel) -> Unit
+    onDecreaseQuantity: (ProductUiModel) -> Unit,
+    onIncreaseQuantity: (ProductUiModel) -> Unit,
+    onRemoveFromCart: (ProductUiModel) -> Unit
 ) {
     if (content.products.isEmpty()) {
         ErrorView(message = "Your cart is empty!")
@@ -77,7 +75,7 @@ private fun CartViewContent(
             verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxSize()
         ) {
-            LazyColumn() {
+            LazyColumn {
                 items(content.products) { product ->
                     CartItem(
                         product = product,
@@ -119,7 +117,7 @@ private fun SummaryItem(
 
 @Composable
 private fun CartItem(
-    product: CartProductUiModel,
+    product: ProductUiModel,
     onDecreaseQuantity: () -> Unit,
     onIncreaseQuantity: () -> Unit,
     onRemoveFromCart: () -> Unit,
@@ -145,7 +143,9 @@ private fun CartItem(
                     modifier = Modifier.weight(1f, false)
                 ) {
                     Image(
-                        painter = rememberAsyncImagePainter(model = product.image),
+                        painter = rememberAsyncImagePainter(
+                            model = product.images.firstOrNull().orEmpty()
+                        ),
                         contentDescription = "Product Image",
                         modifier = Modifier
                             .size(80.dp)
@@ -156,7 +156,7 @@ private fun CartItem(
                     Spacer(modifier = Modifier.width(16.dp))
                     Column {
                         Text(
-                            text = product.name,
+                            text = product.title,
                             style = MaterialTheme.typography.labelLarge,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis
@@ -179,30 +179,11 @@ private fun CartItem(
                     }
                 }
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = onDecreaseQuantity) {
-                        Icon(
-                            imageVector = if (quantity == 1) {
-                                Icons.Outlined.Delete
-                            } else {
-                                Icons.Default.Remove
-                            },
-                            contentDescription = "Remove from cart",
-                            tint = if (quantity == 1) Color.Red else Color.Black
-                        )
-
-                    }
-                    Text(
-                        text = quantity.toString(),
-                        style = MaterialTheme.typography.labelLarge,
-                    )
-                    IconButton(onClick = onIncreaseQuantity) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "Add to cart",
-                        )
-                    }
-                }
+                AddToCart(
+                    quantity = quantity,
+                    onIncreaseQuantity = onIncreaseQuantity,
+                    onDecreaseQuantity = onDecreaseQuantity,
+                )
             }
         }
 

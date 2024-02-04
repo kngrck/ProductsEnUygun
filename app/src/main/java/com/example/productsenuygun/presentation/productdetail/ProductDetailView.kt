@@ -22,8 +22,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Card
@@ -48,6 +46,7 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.productsenuygun.domain.model.ProductUiModel
 import com.example.productsenuygun.presentation.common.ErrorView
+import com.example.productsenuygun.presentation.common.FavoriteButton
 import com.example.productsenuygun.presentation.common.LoadingIndicator
 
 @Composable
@@ -82,7 +81,7 @@ fun ProductDetailContent(
     onRemoveFromCart: () -> Unit,
 ) {
     val product = content.product
-    val isDiscounted = product.discountPrice > 0
+    val isDiscounted = product.discountedPrice > 0
 
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
@@ -223,21 +222,6 @@ private fun ProductDetailTopBar(
 }
 
 @Composable
-private fun FavoriteButton(
-    isFavorite: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    IconButton(onClick = onClick, modifier = modifier) {
-        Icon(
-            imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-            tint = if (isFavorite) Color.Red else Color.Black,
-            contentDescription = "Favorite Button"
-        )
-    }
-}
-
-@Composable
 private fun PriceSection(
     isDiscounted: Boolean,
     product: ProductUiModel
@@ -252,7 +236,7 @@ private fun PriceSection(
         Spacer(modifier = Modifier.width(4.dp))
         if (isDiscounted) {
             Text(
-                text = "${product.discountPrice} $",
+                text = "${product.discountedPrice} $",
                 style = MaterialTheme.typography.labelLarge
             )
         }

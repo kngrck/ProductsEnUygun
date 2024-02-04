@@ -1,14 +1,14 @@
 package com.example.productsenuygun.domain.repository
 
-import com.example.productsenuygun.domain.model.CartProductUiModel
+import com.example.productsenuygun.domain.model.ProductUiModel
 
 interface CartRepository {
 
-    suspend fun getCartProducts(): List<CartProductUiModel>
+    suspend fun getCartProducts(): List<ProductUiModel>
 
-    suspend fun getCartProductById(id: Int): CartProductUiModel?
+    suspend fun getCartProductById(id: Int): ProductUiModel?
 
-    suspend fun increaseQuantityById(cartProductUiModel: CartProductUiModel)
+    suspend fun increaseQuantityById(productUiModel: ProductUiModel)
 
     suspend fun decreaseQuantityById(id: Int)
 

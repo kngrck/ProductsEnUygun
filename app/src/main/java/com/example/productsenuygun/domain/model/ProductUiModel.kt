@@ -2,13 +2,12 @@ package com.example.productsenuygun.domain.model
 
 data class ProductUiModel(
     val id: Int,
-    val brand: String,
     val category: String,
     val description: String,
     val discountPercentage: Double,
     val images: List<String>,
     val price: Int,
-    val discountPrice: Int,
+    val discountedPrice: Int,
     val rating: Double,
     val stock: Int,
     val thumbnail: String,

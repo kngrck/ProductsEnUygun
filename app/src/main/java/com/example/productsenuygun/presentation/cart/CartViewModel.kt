@@ -3,8 +3,11 @@ package com.example.productsenuygun.presentation.cart
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.productsenuygun.domain.model.CartProductUiModel
+import com.example.productsenuygun.domain.model.ProductUiModel
 import com.example.productsenuygun.domain.repository.CartRepository
+import com.example.productsenuygun.domain.usecase.decreaseQuantityBy
+import com.example.productsenuygun.domain.usecase.increaseQuantityById
+import com.example.productsenuygun.domain.usecase.removeProductById
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,14 +28,14 @@ class CartViewModel @Inject constructor(
         getCartProducts()
     }
 
-    fun onIncreaseQuantity(cartProduct: CartProductUiModel) {
+    fun onIncreaseQuantity(product: ProductUiModel) {
         val currentState = currentContentState() ?: return
         val products = currentState.products
 
         viewModelScope.launch(Dispatchers.IO) {
             runCatching {
-                repository.increaseQuantityById(cartProduct)
-                val updatedProducts = products.increaseQuantityById(cartProduct.id)
+                repository.increaseQuantityById(product)
+                val updatedProducts = products.increaseQuantityById(product.id)
                 setProducts(updatedProducts)
             }.onFailure {
                 Log.e("Error", "Cart $it")
@@ -40,14 +43,19 @@ class CartViewModel @Inject constructor(
         }
     }
 
-    fun onDecreaseQuantity(cartProduct: CartProductUiModel) {
+    fun onDecreaseQuantity(product: ProductUiModel) {
         val currentState = currentContentState() ?: return
         val products = currentState.products
 
+        if (product.quantity == 1) {
+            onRemoveFromCart(product)
+            return
+        }
+
         viewModelScope.launch(Dispatchers.IO) {
             runCatching {
-                repository.decreaseQuantityById(cartProduct.id)
-                val updatedProducts = products.decreaseQuantityBy(cartProduct.id)
+                repository.decreaseQuantityById(product.id)
+                val updatedProducts = products.decreaseQuantityBy(product.id)
                 setProducts(updatedProducts)
             }.onFailure {
                 Log.e("Error", "Cart $it")
@@ -55,14 +63,14 @@ class CartViewModel @Inject constructor(
         }
     }
 
-    fun onRemoveFromCart(cartProduct: CartProductUiModel) {
+    fun onRemoveFromCart(product: ProductUiModel) {
         val currentState = currentContentState() ?: return
         val products = currentState.products
 
         viewModelScope.launch(Dispatchers.IO) {
             runCatching {
-                repository.removeProductById(cartProduct.id)
-                val updatedProducts = products.removeProductById(cartProduct.id)
+                repository.removeProductById(product.id)
+                val updatedProducts = products.removeProductById(product.id)
                 setProducts(updatedProducts)
             }.onFailure {
                 Log.e("Error", "Cart $it")
@@ -84,7 +92,7 @@ class CartViewModel @Inject constructor(
         }
     }
 
-    private fun setProducts(products: List<CartProductUiModel>) {
+    private fun setProducts(products: List<ProductUiModel>) {
         val currentState = currentContentState()
 
         _viewState.update {
@@ -102,32 +110,12 @@ class CartViewModel @Inject constructor(
         }
     }
 
-    private fun List<CartProductUiModel>.increaseQuantityById(id: Int): List<CartProductUiModel> {
-        return map {
-            if (it.id == id) {
-                it.copy(quantity = it.quantity + 1)
-            } else it
-        }
-    }
+    private fun List<ProductUiModel>.calculateTotalPrice() = sumOf { it.price * it.quantity }
 
-    private fun List<CartProductUiModel>.decreaseQuantityBy(id: Int): List<CartProductUiModel> {
-        return mapNotNull {
-            if (it.id == id) {
-                if (it.quantity == 1) null else it.copy(quantity = it.quantity - 1)
-            } else it
-        }
-    }
-
-    private fun List<CartProductUiModel>.removeProductById(id: Int): List<CartProductUiModel> {
-        return filter { it.id != id }
-    }
-
-    private fun List<CartProductUiModel>.calculateTotalPrice() = sumOf { it.price * it.quantity }
-
-    private fun List<CartProductUiModel>.calculateDiscount() =
+    private fun List<ProductUiModel>.calculateDiscount() =
         calculateTotalPrice() - sumOf { it.discountedPrice * it.quantity }
 
-    private fun List<CartProductUiModel>.calculateTotal() =
+    private fun List<ProductUiModel>.calculateTotal() =
         sumOf { it.discountedPrice * it.quantity }
 
     private fun currentContentState() = _viewState.value as? CartState.Content

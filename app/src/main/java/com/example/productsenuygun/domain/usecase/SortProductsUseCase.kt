@@ -11,8 +11,8 @@ class SortProductsUseCase @Inject constructor() {
             SortType.DEFAULT -> params.products
             SortType.ALPHABETICALLY_A_Z -> params.products.sortedBy { it.title }
             SortType.ALPHABETICALLY_Z_A -> params.products.sortedByDescending { it.title }
-            SortType.PRICE_LOW_TO_HIGH -> params.products.sortedBy { it.discountPrice }
-            SortType.PRICE_HIGH_TO_LOW -> params.products.sortedByDescending { it.discountPrice }
+            SortType.PRICE_LOW_TO_HIGH -> params.products.sortedBy { it.discountedPrice }
+            SortType.PRICE_HIGH_TO_LOW -> params.products.sortedByDescending { it.discountedPrice }
         }
     }
 

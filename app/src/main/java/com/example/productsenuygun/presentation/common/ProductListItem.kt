@@ -112,13 +112,13 @@ fun ProductListItem(
 
 @Composable
 private fun PriceSection(product: ProductUiModel) {
-    val isDiscounted = product.discountPrice > 0
+    val isDiscounted = product.discountedPrice > 0
     Column(
         modifier = Modifier.padding(bottom = 8.dp, end = 8.dp)
     ) {
         if (isDiscounted) {
             Text(
-                text = "${product.discountPrice} $",
+                text = "${product.discountedPrice} $",
                 style = MaterialTheme.typography.labelLarge,
             )
         }
@@ -136,7 +136,6 @@ private fun PriceSection(product: ProductUiModel) {
 fun ProductItemPreview() {
     ProductListItem(
         ProductUiModel(
-            brand = "Dummy Brand",
             category = "Dummy Category",
             description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
             discountPercentage = 10.0,
@@ -151,7 +150,7 @@ fun ProductItemPreview() {
             thumbnail = "https://example.com/thumbnail.jpg",
             title = "Dummy Product",
             id = 0,
-            discountPrice = 90
+            discountedPrice = 90
         ),
         onClick = {}
     )

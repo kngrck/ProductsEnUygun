@@ -18,4 +18,10 @@ interface ProductRepository {
     suspend fun searchProducts(query: String): List<ProductUiModel>
 
     suspend fun getCategories(): List<Category>
+
+    suspend fun getFavorites(): List<ProductUiModel>
+
+    suspend fun addFavorite(product: ProductUiModel)
+
+    suspend fun deleteFavorite(id: Int)
 }

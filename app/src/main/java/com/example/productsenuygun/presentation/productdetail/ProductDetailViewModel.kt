@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.productsenuygun.domain.mapper.toCartProductUiModel
 import com.example.productsenuygun.domain.repository.CartRepository
 import com.example.productsenuygun.domain.repository.ProductRepository
 import com.example.productsenuygun.presentation.navigation.Arguments
@@ -36,10 +35,24 @@ class ProductDetailViewModel @Inject constructor(
     fun onFavoriteClick() {
         val currentState = currentContentState() ?: return
         val product = currentState.product
+        val isFavorite = !product.isFavorite
         _viewState.update {
-            currentState.copy(product = product.copy(isFavorite = !product.isFavorite))
+            currentState.copy(product = product.copy(isFavorite = isFavorite))
         }
-        //TODO Add call
+        viewModelScope.launch(Dispatchers.IO) {
+            runCatching {
+                if (isFavorite) {
+                    productRepository.addFavorite(product)
+                } else {
+                    productRepository.deleteFavorite(product.id)
+                }
+            }.onFailure {
+                Log.e("Error", "Product detail favorite $it")
+                _viewState.update {
+                    currentState.copy(product = product.copy(isFavorite = !isFavorite))
+                }
+            }
+        }
     }
 
     fun onAddToCart() {
@@ -48,7 +61,7 @@ class ProductDetailViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
             runCatching {
-                cartRepository.increaseQuantityById(product.toCartProductUiModel())
+                cartRepository.increaseQuantityById(product)
                 _viewState.update {
                     currentState.copy(product = product.copy(quantity = product.quantity + 1))
                 }
@@ -77,9 +90,7 @@ class ProductDetailViewModel @Inject constructor(
     private fun getProduct() {
         viewModelScope.launch(Dispatchers.IO) {
             runCatching {
-                val cartProduct = cartRepository.getCartProductById(productId)
                 val product = productRepository.getProductById(productId)
-                    .copy(quantity = cartProduct?.quantity ?: 0)
 
                 _viewState.update {
                     ProductDetailState.Content(product = product)

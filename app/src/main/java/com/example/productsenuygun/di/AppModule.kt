@@ -30,8 +30,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideProductRepository(api: ProductApi): ProductRepository {
-        return ProductRepositoryImpl(api)
+    fun provideProductRepository(api: ProductApi, appDatabase: AppDatabase): ProductRepository {
+        return ProductRepositoryImpl(api, appDatabase)
     }
 
     @Provides
