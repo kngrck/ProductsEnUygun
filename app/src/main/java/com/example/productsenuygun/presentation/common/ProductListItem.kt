@@ -25,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -102,32 +101,11 @@ fun ProductListItem(
                             style = MaterialTheme.typography.labelSmall
                         )
                     }
-                    PriceSection(product)
+                    PriceSection(product.discountedPrice, product.price)
                 }
             }
         }
 
-    }
-}
-
-@Composable
-private fun PriceSection(product: ProductUiModel) {
-    val isDiscounted = product.discountedPrice > 0
-    Column(
-        modifier = Modifier.padding(bottom = 8.dp, end = 8.dp)
-    ) {
-        if (isDiscounted) {
-            Text(
-                text = "${product.discountedPrice} $",
-                style = MaterialTheme.typography.labelLarge,
-            )
-        }
-        Text(
-            text = "${product.price} $",
-            textDecoration = if (isDiscounted) TextDecoration.LineThrough else null,
-            style = if (isDiscounted) MaterialTheme.typography.labelSmall else MaterialTheme.typography.labelLarge,
-            color = if (isDiscounted) Color.Gray else Color.Black
-        )
     }
 }
 

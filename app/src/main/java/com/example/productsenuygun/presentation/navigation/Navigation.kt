@@ -14,7 +14,8 @@ enum class Screen {
     PRODUCT_LIST,
     FAVORITES,
     CART,
-    PRODUCT_DETAIL
+    PRODUCT_DETAIL,
+    CHECKOUT
 }
 
 enum class Arguments {
@@ -45,6 +46,12 @@ sealed class NavigationItem(val route: String, val title: String, val icon: Imag
         title = "Cart",
         icon = Icons.Default.ShoppingCart
     )
+
+    data object Checkout : NavigationItem(
+        route = Screen.CHECKOUT.name,
+        title = "Checkout",
+        icon = Icons.Default.ShoppingCart
+    )
 }
 
 @Composable
@@ -56,6 +63,7 @@ fun currentNavigationItem(navController: NavController): NavigationItem? {
         route == NavigationItem.ProductList.route -> NavigationItem.ProductList
         route == NavigationItem.Favorites.route -> NavigationItem.Favorites
         route == NavigationItem.Cart.route -> NavigationItem.Cart
+        route == NavigationItem.Checkout.route -> NavigationItem.Checkout
         route != null && route.contains(NavigationItem.ProductDetail.route) -> NavigationItem.ProductDetail
         else -> null
     }

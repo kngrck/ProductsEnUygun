@@ -5,6 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.productsenuygun.domain.model.ProductUiModel
 import com.example.productsenuygun.domain.repository.CartRepository
+import com.example.productsenuygun.domain.usecase.calculateDiscount
+import com.example.productsenuygun.domain.usecase.calculateTotal
+import com.example.productsenuygun.domain.usecase.calculateTotalPrice
 import com.example.productsenuygun.domain.usecase.decreaseQuantityBy
 import com.example.productsenuygun.domain.usecase.increaseQuantityById
 import com.example.productsenuygun.domain.usecase.removeProductById
@@ -78,17 +81,6 @@ class CartViewModel @Inject constructor(
         }
     }
 
-    fun onPurchase() {
-        viewModelScope.launch(Dispatchers.IO) {
-            runCatching {
-                repository.emptyCart()
-                setProducts(emptyList())
-            }.onFailure {
-                Log.e("Error", "Cart $it")
-            }
-        }
-    }
-
     private fun getCartProducts() {
         viewModelScope.launch(Dispatchers.IO) {
             runCatching {
@@ -120,14 +112,6 @@ class CartViewModel @Inject constructor(
             )
         }
     }
-
-    private fun List<ProductUiModel>.calculateTotalPrice() = sumOf { it.price * it.quantity }
-
-    private fun List<ProductUiModel>.calculateDiscount() =
-        calculateTotalPrice() - sumOf { it.discountedPrice * it.quantity }
-
-    private fun List<ProductUiModel>.calculateTotal() =
-        sumOf { it.discountedPrice * it.quantity }
 
     private fun currentContentState() = _viewState.value as? CartState.Content
 }

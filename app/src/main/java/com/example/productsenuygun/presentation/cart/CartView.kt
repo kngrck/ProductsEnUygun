@@ -41,6 +41,8 @@ import com.example.productsenuygun.domain.model.ProductUiModel
 import com.example.productsenuygun.presentation.common.AddToCart
 import com.example.productsenuygun.presentation.common.ErrorView
 import com.example.productsenuygun.presentation.common.LoadingIndicator
+import com.example.productsenuygun.presentation.common.SummaryItem
+import com.example.productsenuygun.presentation.navigation.NavigationItem
 
 @Composable
 fun CartView(navController: NavController, viewModel: CartViewModel = hiltViewModel()) {
@@ -51,11 +53,11 @@ fun CartView(navController: NavController, viewModel: CartViewModel = hiltViewMo
 
     when (val state = viewModel.viewState.collectAsState().value) {
         is CartState.Content -> CartViewContent(
+            navController = navController,
             content = state,
             onDecreaseQuantity = viewModel::onDecreaseQuantity,
             onIncreaseQuantity = viewModel::onIncreaseQuantity,
             onRemoveFromCart = viewModel::onRemoveFromCart,
-            onPurchase = viewModel::onPurchase
         )
 
         is CartState.Error -> ErrorView(message = state.message)
@@ -65,11 +67,11 @@ fun CartView(navController: NavController, viewModel: CartViewModel = hiltViewMo
 
 @Composable
 private fun CartViewContent(
+    navController: NavController,
     content: CartState.Content,
     onDecreaseQuantity: (ProductUiModel) -> Unit,
     onIncreaseQuantity: (ProductUiModel) -> Unit,
-    onRemoveFromCart: (ProductUiModel) -> Unit,
-    onPurchase: () -> Unit
+    onRemoveFromCart: (ProductUiModel) -> Unit
 ) {
     if (content.products.isEmpty()) {
         ErrorView(message = "Your cart is empty!")
@@ -90,12 +92,12 @@ private fun CartViewContent(
             Column {
                 Summary(content)
                 Button(
-                    onClick = onPurchase,
+                    onClick = { navController.navigate(NavigationItem.Checkout.route) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
                 ) {
-                    Text(text = "Purchase")
+                    Text(text = "Checkout")
                 }
             }
         }
@@ -110,21 +112,6 @@ private fun Summary(
         SummaryItem(title = "Total price:", value = "${content.totalPrice} $")
         SummaryItem(title = "Total discount:", value = "${content.totalDiscount} $")
         SummaryItem(title = "Total:", value = "${content.total} $")
-    }
-}
-
-@Composable
-private fun SummaryItem(
-    title: String,
-    value: String
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text(text = title, style = MaterialTheme.typography.labelMedium)
-        Text(text = value, style = MaterialTheme.typography.bodyMedium)
     }
 }
 

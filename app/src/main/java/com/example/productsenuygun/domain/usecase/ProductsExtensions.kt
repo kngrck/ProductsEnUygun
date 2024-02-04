@@ -22,3 +22,11 @@ fun List<ProductUiModel>.decreaseQuantityBy(id: Int): List<ProductUiModel> {
 fun List<ProductUiModel>.removeProductById(id: Int): List<ProductUiModel> {
     return filter { it.id != id }
 }
+
+fun List<ProductUiModel>.calculateTotalPrice() = sumOf { it.price * it.quantity }
+
+fun List<ProductUiModel>.calculateDiscount() =
+    calculateTotalPrice() - sumOf { it.discountedPrice * it.quantity }
+
+fun List<ProductUiModel>.calculateTotal() =
+    sumOf { it.discountedPrice * it.quantity }

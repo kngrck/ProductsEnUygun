@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.productsenuygun.presentation.cart.CartView
+import com.example.productsenuygun.presentation.checkout.CheckoutView
 import com.example.productsenuygun.presentation.favorites.FavoritesView
 import com.example.productsenuygun.presentation.productdetail.ProductDetailView
 import com.example.productsenuygun.presentation.productlist.ProductListingView
@@ -51,6 +52,15 @@ fun NavigationHost(navController: NavHostController, padding: PaddingValues) {
             popExitTransition = null
         ) {
             CartView(navController)
+        }
+        composable(
+            NavigationItem.Checkout.route,
+            enterTransition = null,
+            exitTransition = null,
+            popEnterTransition = null,
+            popExitTransition = null
+        ) {
+            CheckoutView(navController)
         }
         composable(
             "${NavigationItem.ProductDetail.route}/{${Arguments.PRODUCT_ID.name}}",
