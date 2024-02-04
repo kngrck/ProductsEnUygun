@@ -53,6 +53,11 @@ class CartRepositoryImpl(
         _cartTotalItems.emit(getTotalItemsInCart())
     }
 
+    override suspend fun emptyCart() {
+        cartDao.emptyCart()
+        _cartTotalItems.emit(getTotalItemsInCart())
+    }
+
     override suspend fun initCart() {
         _cartTotalItems.emit(getTotalItemsInCart())
     }

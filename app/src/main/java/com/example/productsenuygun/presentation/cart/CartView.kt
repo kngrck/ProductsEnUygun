@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -53,7 +54,8 @@ fun CartView(navController: NavController, viewModel: CartViewModel = hiltViewMo
             content = state,
             onDecreaseQuantity = viewModel::onDecreaseQuantity,
             onIncreaseQuantity = viewModel::onIncreaseQuantity,
-            onRemoveFromCart = viewModel::onRemoveFromCart
+            onRemoveFromCart = viewModel::onRemoveFromCart,
+            onPurchase = viewModel::onPurchase
         )
 
         is CartState.Error -> ErrorView(message = state.message)
@@ -66,7 +68,8 @@ private fun CartViewContent(
     content: CartState.Content,
     onDecreaseQuantity: (ProductUiModel) -> Unit,
     onIncreaseQuantity: (ProductUiModel) -> Unit,
-    onRemoveFromCart: (ProductUiModel) -> Unit
+    onRemoveFromCart: (ProductUiModel) -> Unit,
+    onPurchase: () -> Unit
 ) {
     if (content.products.isEmpty()) {
         ErrorView(message = "Your cart is empty!")
@@ -84,7 +87,17 @@ private fun CartViewContent(
                         onRemoveFromCart = { onRemoveFromCart(product) })
                 }
             }
-            Summary(content)
+            Column {
+                Summary(content)
+                Button(
+                    onClick = onPurchase,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                ) {
+                    Text(text = "Purchase")
+                }
+            }
         }
     }
 }

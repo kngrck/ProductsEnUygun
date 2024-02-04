@@ -78,6 +78,17 @@ class CartViewModel @Inject constructor(
         }
     }
 
+    fun onPurchase() {
+        viewModelScope.launch(Dispatchers.IO) {
+            runCatching {
+                repository.emptyCart()
+                setProducts(emptyList())
+            }.onFailure {
+                Log.e("Error", "Cart $it")
+            }
+        }
+    }
+
     private fun getCartProducts() {
         viewModelScope.launch(Dispatchers.IO) {
             runCatching {
