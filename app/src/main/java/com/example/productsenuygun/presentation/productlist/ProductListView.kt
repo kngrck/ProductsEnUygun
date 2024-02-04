@@ -45,7 +45,7 @@ fun ProductListingView(
     navController: NavController,
     viewModel: ProductListViewModel = hiltViewModel()
 ) {
-    LaunchedEffect(Unit){
+    LaunchedEffect(Unit) {
         viewModel.initProductList()
     }
 
@@ -163,38 +163,37 @@ private fun ProductList(
     content: ProductListState.Content,
     onProductClick: (productId: Int) -> Unit,
 ) {
-    LazyColumn(
-        state = lazyListState,
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        when (content.searchState) {
-            is SearchState.Loaded -> items(content.searchState.searchedProducts) { product ->
-                ProductListItem(product = product, onClick = { onProductClick(product.id) })
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-
-            is SearchState.NoResult -> item { Text(text = "No result.") }
-            is SearchState.Loading -> item {
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        LazyColumn(
+            state = lazyListState,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            when (content.searchState) {
+                is SearchState.Loaded -> items(content.searchState.searchedProducts) { product ->
+                    ProductListItem(product = product, onClick = { onProductClick(product.id) })
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
-            }
 
-            is SearchState.Empty -> items(content.products) { product ->
-                ProductListItem(product = product, onClick = { onProductClick(product.id) })
-                Spacer(modifier = Modifier.height(16.dp))
-            }
+                is SearchState.NoResult -> item { Text(text = "No result.") }
+                is SearchState.Loading -> item {
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
+                }
 
+                is SearchState.Empty -> items(content.products) { product ->
+                    ProductListItem(product = product, onClick = { onProductClick(product.id) })
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
+            }
         }
-
         if (content.pageLoading) {
-            item {
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                }
-            }
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.BottomCenter))
         }
     }
 }

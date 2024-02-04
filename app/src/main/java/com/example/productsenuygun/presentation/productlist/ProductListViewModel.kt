@@ -75,12 +75,12 @@ class ProductListViewModel @Inject constructor(
             runCatching {
                 val nextPage = state.currentPage + 1
                 val paginatedProducts = repository.getProducts(nextPage)
-                val currentProducts = state.products.toMutableList()
-                currentProducts.addAll(paginatedProducts.products)
+                val updatedProducts = state.products.toMutableList()
+                updatedProducts.addAll(paginatedProducts.products)
 
                 _productListState.update {
                     state.copy(
-                        products = currentProducts,
+                        products = updatedProducts,
                         pageLoading = false,
                         isLastPage = paginatedProducts.isLastPage,
                         currentPage = nextPage
@@ -164,7 +164,8 @@ class ProductListViewModel @Inject constructor(
                         ),
                         searchState = SearchState.Empty,
                         queryError = "",
-                        query = ""
+                        query = "",
+                        pageLoading = true
                     )
                 }
                 val products = getProducts()
@@ -197,7 +198,8 @@ class ProductListViewModel @Inject constructor(
                         ),
                         searchState = SearchState.Empty,
                         queryError = "",
-                        query = ""
+                        query = "",
+                        pageLoading = true
                     )
                 }
 
@@ -271,12 +273,14 @@ class ProductListViewModel @Inject constructor(
                         )
                     ),
                     isLastPage = paginatedProducts.isLastPage,
-                    totalProducts = paginatedProducts.total
+                    totalProducts = paginatedProducts.total,
+                    pageLoading = false
                 )
             } ?: ProductListState.Content(
                 products = paginatedProducts.products,
                 isLastPage = paginatedProducts.isLastPage,
-                totalProducts = paginatedProducts.total
+                totalProducts = paginatedProducts.total,
+                pageLoading = false
             )
         }
     }
