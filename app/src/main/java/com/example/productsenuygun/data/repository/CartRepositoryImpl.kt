@@ -40,7 +40,7 @@ class CartRepositoryImpl(
         val product = getCartProductById(id)
 
         if (product?.quantity == 1) {
-            cartDao.deleteProductById(id)
+            removeProductById(product.id)
             return
         }
 
@@ -64,6 +64,7 @@ class CartRepositoryImpl(
 
     private suspend fun getTotalItemsInCart(): Int {
         val cartProducts = cartDao.getAll()
+        if (cartProducts.isEmpty()) return 0
         return cartProducts.sumOf { it.quantity }
     }
 }
