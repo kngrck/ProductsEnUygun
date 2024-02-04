@@ -9,6 +9,7 @@ import com.example.productsenuygun.domain.model.PaginatedProducts
 import com.example.productsenuygun.domain.model.filter.Category
 import com.example.productsenuygun.domain.model.filter.SortType
 import com.example.productsenuygun.domain.model.filter.defaultCategory
+import com.example.productsenuygun.domain.repository.CartRepository
 import com.example.productsenuygun.domain.repository.ProductRepository
 import com.example.productsenuygun.domain.usecase.SortProductsUseCase
 import io.mockk.coEvery
@@ -33,15 +34,18 @@ class ProductListViewModelTest {
 
     private lateinit var viewModel: ProductListViewModel
     private lateinit var repository: ProductRepository
+    private lateinit var cartRepository: CartRepository
     private lateinit var sortProductsUseCase: SortProductsUseCase
     private lateinit var testDispatcher: DispatcherProvider
 
     @Before
     fun setup() {
         repository = mockk(relaxed = true)
+        cartRepository = mockk(relaxed = true)
         sortProductsUseCase = SortProductsUseCase()
         testDispatcher = TestDispatchers()
-        viewModel = ProductListViewModel(repository, sortProductsUseCase, testDispatcher)
+        viewModel =
+            ProductListViewModel(repository, cartRepository, sortProductsUseCase, testDispatcher)
     }
 
     @Test
