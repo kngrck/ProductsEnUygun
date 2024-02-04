@@ -50,6 +50,9 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -67,7 +70,10 @@ dependencies {
     kapt(libs.room.compiler)
     implementation(libs.room.ktx)
 
+    testImplementation(libs.coroutine.test)
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.turbine)
     androidTestImplementation(libs.junit.ext)
     androidTestImplementation(platform(libs.compose.bom))
     debugImplementation(libs.compose.ui.tooling)

@@ -2,6 +2,8 @@ package com.example.productsenuygun.di
 
 import android.content.Context
 import androidx.room.Room
+import com.example.productsenuygun.AppDispatchers
+import com.example.productsenuygun.DispatcherProvider
 import com.example.productsenuygun.data.api.ProductApi
 import com.example.productsenuygun.data.local.AppDatabase
 import com.example.productsenuygun.data.repository.CartRepositoryImpl
@@ -38,5 +40,11 @@ object AppModule {
     @Singleton
     fun provideCartRepository(localDatabase: AppDatabase): CartRepository {
         return CartRepositoryImpl(localDatabase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDispatcher(): DispatcherProvider {
+        return AppDispatchers()
     }
 }

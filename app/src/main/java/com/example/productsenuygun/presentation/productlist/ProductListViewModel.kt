@@ -3,6 +3,7 @@ package com.example.productsenuygun.presentation.productlist
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.productsenuygun.DispatcherProvider
 import com.example.productsenuygun.domain.model.PaginatedProducts
 import com.example.productsenuygun.domain.model.filter.Category
 import com.example.productsenuygun.domain.model.filter.SortType
@@ -10,7 +11,6 @@ import com.example.productsenuygun.domain.model.filter.defaultCategory
 import com.example.productsenuygun.domain.repository.ProductRepository
 import com.example.productsenuygun.domain.usecase.SortProductsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,14 +23,43 @@ import javax.inject.Inject
 class ProductListViewModel @Inject constructor(
     private val repository: ProductRepository,
     private val sortProductsUseCase: SortProductsUseCase,
+    private val dispatchers: DispatcherProvider
 ) : ViewModel() {
 
     private val _productListState: MutableStateFlow<ProductListState> =
         MutableStateFlow(ProductListState.Loading)
     val state: StateFlow<ProductListState> = _productListState.asStateFlow()
 
-    init {
-        initPage()
+    fun initProductList() {
+        viewModelScope.launch(dispatchers.io) {
+            val categoriesDeferred = async {
+                runCatching {
+                    repository.getCategories()
+                }.onFailure {
+                    Log.e(
+                        "Error",
+                        "Could not fetch categories $it"
+                    )
+                }
+            }
+            val productsDeferred = async {
+                runCatching {
+                    getProducts()
+                }.onFailure {
+                    Log.e(
+                        "Error",
+                        "Could not fetch products $it"
+                    )
+                    _productListState.update {
+                        ProductListState.Error("Something went wrong!")
+                    }
+                }
+            }
+            val categories = categoriesDeferred.await().getOrNull()
+            val products = productsDeferred.await().getOrNull() ?: return@launch
+            setProducts(products)
+            categories?.let { setCategories(it) }
+        }
     }
 
     fun loadMoreProducts() {
@@ -39,7 +68,7 @@ class ProductListViewModel @Inject constructor(
 
         showPaginationLoader()
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatchers.io) {
             runCatching {
                 val nextPage = state.currentPage + 1
                 val paginatedProducts = repository.getProducts(nextPage)
@@ -78,7 +107,7 @@ class ProductListViewModel @Inject constructor(
     fun onSearch() {
         val state = currentContentState() ?: return
         val query = state.query
-        if (query.length < 2) {
+        if (query.length < 3) {
             _productListState.update {
                 state.copy(queryError = "At least 3 characters.")
             }
@@ -86,7 +115,7 @@ class ProductListViewModel @Inject constructor(
         }
 
         showSearchLoader()
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatchers.io) {
             runCatching {
                 val searchedProducts = repository.searchProducts(query)
                 val searchState =
@@ -94,7 +123,7 @@ class ProductListViewModel @Inject constructor(
                         searchedProducts
                     )
                 _productListState.update {
-                    state.copy(searchState = searchState, queryError = "")
+                    state.copy(searchState = searchState, isLastPage = true, queryError = "")
                 }
             }.onFailure {
                 Log.e("Error", it.message.orEmpty())
@@ -122,7 +151,7 @@ class ProductListViewModel @Inject constructor(
         val currentState = currentContentState() ?: return
         val filterState = currentState.filterState
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatchers.io) {
             runCatching {
                 _productListState.update {
                     currentState.copy(
@@ -154,7 +183,7 @@ class ProductListViewModel @Inject constructor(
         val filterState = currentState.filterState
 
         if (filterState.isApplied) {
-            viewModelScope.launch(Dispatchers.IO) {
+            viewModelScope.launch(dispatchers.io) {
                 _productListState.update {
                     currentState.copy(
                         filterState = filterState.copy(
@@ -210,37 +239,6 @@ class ProductListViewModel @Inject constructor(
                     selectedCategory = if (filterState.isApplied) filterState.selectedCategory else defaultCategory()
                 )
             )
-        }
-    }
-
-    private fun initPage() {
-        viewModelScope.launch(Dispatchers.IO) {
-            runCatching {
-                val categoriesDeferred = async {
-                    try {
-                        repository.getCategories()
-                    } catch (e: Error) {
-                        Log.e(
-                            "Error",
-                            "Could not fetch categories"
-                        )
-                        null
-                    }
-                }
-                val productsDeferred = async { getProducts() }
-                val categories = categoriesDeferred.await()
-                val products = productsDeferred.await()
-                setProducts(products)
-                categories?.let { setCategories(it) }
-            }.onFailure {
-                Log.e(
-                    "Error",
-                    "Could not fetch products"
-                )
-                _productListState.update {
-                    ProductListState.Error("Something went wrong!")
-                }
-            }
         }
     }
 

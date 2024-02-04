@@ -45,6 +45,9 @@ fun ProductListingView(
     navController: NavController,
     viewModel: ProductListViewModel = hiltViewModel()
 ) {
+    LaunchedEffect(Unit){
+        viewModel.initProductList()
+    }
 
     when (val state = viewModel.state.collectAsState().value) {
         is ProductListState.Loading -> LoadingIndicator()
