@@ -93,6 +93,7 @@ private fun CartViewContent(
                 Summary(content)
                 Button(
                     onClick = { navController.navigate(NavigationItem.Checkout.route) },
+                    enabled = content.products.isNotEmpty(),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)

@@ -52,7 +52,10 @@ fun CheckoutView(
         is CheckoutState.Content -> CheckoutContent(
             navController = navController,
             content = state,
-            onProceed = viewModel::onProceed,
+            onProceed = {
+                viewModel.onProceed()
+                navController.popBackStack()
+            },
         )
     }
 }
