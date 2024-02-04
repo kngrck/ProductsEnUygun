@@ -8,6 +8,7 @@ import com.example.productsenuygun.domain.model.PaginatedProducts
 import com.example.productsenuygun.domain.model.filter.Category
 import com.example.productsenuygun.domain.model.filter.SortType
 import com.example.productsenuygun.domain.model.filter.defaultCategory
+import com.example.productsenuygun.domain.repository.CartRepository
 import com.example.productsenuygun.domain.repository.ProductRepository
 import com.example.productsenuygun.domain.usecase.SortProductsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,6 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductListViewModel @Inject constructor(
     private val repository: ProductRepository,
+    private val cartRepository: CartRepository,
     private val sortProductsUseCase: SortProductsUseCase,
     private val dispatchers: DispatcherProvider
 ) : ViewModel() {
@@ -32,6 +34,7 @@ class ProductListViewModel @Inject constructor(
 
     fun initProductList() {
         viewModelScope.launch(dispatchers.io) {
+            cartRepository.initCart()
             val categoriesDeferred = async {
                 runCatching {
                     repository.getCategories()

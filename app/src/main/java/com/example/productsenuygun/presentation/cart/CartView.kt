@@ -75,7 +75,7 @@ private fun CartViewContent(
             verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxSize()
         ) {
-            LazyColumn {
+            LazyColumn(modifier = Modifier.weight(1f, fill = false)) {
                 items(content.products) { product ->
                     CartItem(
                         product = product,

@@ -1,8 +1,11 @@
 package com.example.productsenuygun.domain.repository
 
 import com.example.productsenuygun.domain.model.ProductUiModel
+import kotlinx.coroutines.flow.SharedFlow
 
 interface CartRepository {
+
+    val cartTotalItems: SharedFlow<Int>
 
     suspend fun getCartProducts(): List<ProductUiModel>
 
@@ -13,4 +16,6 @@ interface CartRepository {
     suspend fun decreaseQuantityById(id: Int)
 
     suspend fun removeProductById(id: Int)
+
+    suspend fun initCart()
 }

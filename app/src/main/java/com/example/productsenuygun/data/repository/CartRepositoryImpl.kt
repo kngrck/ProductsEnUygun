@@ -5,11 +5,19 @@ import com.example.productsenuygun.domain.mapper.toCartProduct
 import com.example.productsenuygun.domain.mapper.toUiModel
 import com.example.productsenuygun.domain.model.ProductUiModel
 import com.example.productsenuygun.domain.repository.CartRepository
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 
 class CartRepositoryImpl(
     private val localDatabase: AppDatabase
 ) : CartRepository {
+
     private val cartDao = localDatabase.cartDao()
+    private val _cartTotalItems = MutableSharedFlow<Int>()
+
+    override val cartTotalItems: SharedFlow<Int>
+        get() = _cartTotalItems.asSharedFlow()
 
     override suspend fun getCartProducts(): List<ProductUiModel> {
         return cartDao.getAll().map { it.toUiModel() }
@@ -23,7 +31,9 @@ class CartRepositoryImpl(
         val cartProduct = productUiModel.toCartProduct()
         val product = getCartProductById(cartProduct.id)
         if (product == null) cartDao.addProduct(cartProduct)
-        return cartDao.increaseQuantityById(cartProduct.id)
+
+        cartDao.increaseQuantityById(cartProduct.id)
+        _cartTotalItems.emit(getTotalItemsInCart())
     }
 
     override suspend fun decreaseQuantityById(id: Int) {
@@ -34,10 +44,21 @@ class CartRepositoryImpl(
             return
         }
 
-        return cartDao.decreaseQuantityById(id)
+        cartDao.decreaseQuantityById(id)
+        _cartTotalItems.emit(getTotalItemsInCart())
     }
 
     override suspend fun removeProductById(id: Int) {
         cartDao.deleteProductById(id)
+        _cartTotalItems.emit(getTotalItemsInCart())
+    }
+
+    override suspend fun initCart() {
+        _cartTotalItems.emit(getTotalItemsInCart())
+    }
+
+    private suspend fun getTotalItemsInCart(): Int {
+        val cartProducts = cartDao.getAll()
+        return cartProducts.sumOf { it.quantity }
     }
 }
